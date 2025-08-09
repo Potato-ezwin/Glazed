@@ -12,7 +12,7 @@ import com.chorus.common.QuickImports;
 import com.chorus.common.util.player.input.InputUtils;
 import com.chorus.impl.modules.client.ClickGUI;
 import com.chorus.impl.screen.hud.HUDEditorScreen;
-import com.chorus.impl.screen.remnant.KeybindBox;
+
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.MinecraftClient;
@@ -80,7 +80,7 @@ public class RemnantScreen extends Screen implements QuickImports {
     private boolean draggingAlpha = false;
     private boolean draggingSaturationBrightness = false;
     
-    private final Map<KeySetting, KeybindBox> keybindBoxes = new HashMap<>();
+    private final Map<KeybindSetting, KeybindBox> keybindBoxes = new HashMap<>();
     
     @Getter
     class Panel {
@@ -313,7 +313,7 @@ public class RemnantScreen extends Screen implements QuickImports {
                         KNOB_SIZE / 2,
                         TOGGLE_KNOB_COLOR);
             }
-            case KeySetting keySetting -> {
+            case KeybindSetting keySetting -> {
                 float keyboxY = moduleY + (PANEL_HEIGHT - 15) / 2;
                 KeybindBox keybox = keybindBoxes.computeIfAbsent(keySetting, 
                     k -> new KeybindBox(k, posX + PANEL_WIDTH - 80 - SETTING_PADDING, keyboxY, 75, 15));
@@ -739,13 +739,7 @@ public class RemnantScreen extends Screen implements QuickImports {
             inter.render(matrices, "HUD Editor", mc.getWindow().getScaledWidth() - inter.getWidth("HUD Editor", 8) - 10, 10, 8, Color.WHITE.getRGB());
         }
 
-        if (!Chorus.getInstance().isAuthenticated) {
-            try {
-                CrashUtil.exit(CrashUtil.Severity.SUSPICIOUS);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        }
+
 
         boolean foundHoveredModule = false;
         long currentTime = System.currentTimeMillis();
@@ -1202,7 +1196,7 @@ public class RemnantScreen extends Screen implements QuickImports {
                                     return true;
                                 }
                             }
-                            case KeySetting keySetting -> {
+                            case KeybindSetting keySetting -> {
                                 KeybindBox keybox = keybindBoxes.get(keySetting);
                                 if (keybox != null) {
                                     float keyboxY = moduleY + (PANEL_HEIGHT - 15) / 2;

@@ -6,7 +6,6 @@ import com.chorus.impl.events.player.*;
 import com.chorus.impl.events.world.WorldChangeEvent;
 import com.chorus.impl.modules.other.MultiTask;
 import com.chorus.impl.modules.visual.PlayerESP;
-import com.chorus.impl.screen.auth.LoginScreen;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -208,26 +207,7 @@ public class MinecraftClientMixin implements QuickImports {
         Chorus.getInstance().getEventManager().post(new WorldChangeEvent(world));
     }
 
-    @Inject(
-        method = "render",
-        at = @At("HEAD")
-    )
-    private void onRender(CallbackInfo ci) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.getOverlay() != null) {
-            return;
-        }
-        
-        if (!Chorus.getInstance().isAuthenticated) {
-            if (!(client.currentScreen instanceof LoginScreen)) {
-                client.setScreen(new LoginScreen());
-            }
-        } else {
-            if (client.currentScreen instanceof LoginScreen) {
-                client.setScreen(null);
-            }
-        }
-    }
+
 }
 
 

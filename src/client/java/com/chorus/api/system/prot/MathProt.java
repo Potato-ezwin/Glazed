@@ -1,12 +1,9 @@
 package com.chorus.api.system.prot;
 
 import cc.polymorphism.annot.IncludeReference;
-import com.chorus.api.system.networking.NetworkManager;
-import com.chorus.api.system.networking.packet.factory.PacketFactory;
-import com.chorus.api.system.networking.response.factory.ResponseHandlerFactory;
 
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @IncludeReference
 public class MathProt {
@@ -18,48 +15,23 @@ public class MathProt {
         if (!initialized) {
             synchronized (INIT_LOCK) {
                 if (!initialized) {
-                    fetchAllConstants();
+                    initializeDefaultConstants();
                     initialized = true;
                 }
             }
         }
     }
 
-    public static void fetchAllConstants() {
-        String[] constantNames = {
-            "pi", "e", "phi", "sqrt2", "sqrt3", "ln2", "ln10", "size"
-        };
-        
-        CompletableFuture<?>[] futures = new CompletableFuture[constantNames.length];
-        
-        for (int i = 0; i < constantNames.length; i++) {
-            final String constantName = constantNames[i];
-            futures[i] = CompletableFuture.runAsync(() -> {
-                double value = fetchConst(constantName);
-                consts.put(constantName, value);
-            });
-        }
-        
-        try {
-            CompletableFuture.allOf(futures).get(5, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static double fetchConst(String name) {
-        NetworkManager net = NetworkManager.getInstance();
-        if (!net.isConnected()) return 0.0;
-        
-        try {
-            net.sendPacket(PacketFactory.createConstantPacket(name));
-            String response = net.readResponse();
-            
-            return ResponseHandlerFactory.getConstantResponseHandler().handle(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0.0;
+    private static void initializeDefaultConstants() {
+        // Initialize with standard mathematical constants
+        consts.put("pi", Math.PI);
+        consts.put("e", Math.E);
+        consts.put("phi", (1.0 + Math.sqrt(5.0)) / 2.0); // Golden ratio
+        consts.put("sqrt2", Math.sqrt(2.0));
+        consts.put("sqrt3", Math.sqrt(3.0));
+        consts.put("ln2", Math.log(2.0));
+        consts.put("ln10", Math.log(10.0));
+        consts.put("size", 1.0); // Default size value
     }
 
     public static double getConst(String name) {

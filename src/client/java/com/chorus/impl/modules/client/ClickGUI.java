@@ -5,7 +5,7 @@ import com.chorus.api.module.ModuleCategory;
 import com.chorus.api.module.ModuleInfo;
 import com.chorus.api.module.setting.implement.ModeSetting;
 import com.chorus.common.QuickImports;
-import com.chorus.impl.screen.auth.LoginScreen;
+
 import com.chorus.impl.screen.primordial.PrimordialScreen;
 import com.chorus.impl.screen.remnant.RemnantScreen;
 import org.lwjgl.glfw.GLFW;
@@ -16,22 +16,18 @@ public class ClickGUI extends BaseModule implements QuickImports {
             "Remnant",
             "Remnant",
             "Primordial");
-    @Override
-    protected void onModuleEnabled()
-    {
-        if (mc.currentScreen instanceof LoginScreen) {
-            return;
-        }
 
+    public ClickGUI() {
+        this.getSettingRepository().registerSetting(mode);
+    }
+
+    @Override
+    protected void onModuleEnabled() {
         if (mode.getValue().equals("Remnant")) {
             mc.setScreen(RemnantScreen.getINSTANCE());
         } else {
             mc.setScreen(PrimordialScreen.getINSTANCE());
         }
-    }
-
-    public ClickGUI() {
-        getSettingRepository().registerSettings(mode);
     }
 
     @Override

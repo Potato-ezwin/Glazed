@@ -1,23 +1,23 @@
-package com.nightplus.impl.screen.remnant;
+package com.chorus.impl.screen.remnant;
 
-import nightplus0.Chorus;
-import com.nightplus.api.module.setting.implement.KeySetting;
-import com.nightplus.api.system.render.Render2DEngine;
-import com.nightplus.api.system.render.font.FontAtlas;
-import com.nightplus.common.QuickImports;
+import chorus0.Chorus;
+import com.chorus.api.module.setting.implement.KeybindSetting;
+import com.chorus.api.system.render.Render2DEngine;
+import com.chorus.api.system.render.font.FontAtlas;
+import com.chorus.common.QuickImports;
 import net.minecraft.client.gui.DrawContext;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 
 public class KeybindBox implements QuickImports {
-    private final KeySetting keySetting;
+    private final KeybindSetting keySetting;
     private float x, y, width, height;
     private boolean isListening = false;
-    private Color currentAlpha;
+
     private boolean isHovered = false;
 
-    public KeybindBox(KeySetting keySetting, float x, float y, float width, float height) {
+    public KeybindBox(KeybindSetting keySetting, float x, float y, float width, float height) {
         this.keySetting = keySetting;
         this.x = x;
         this.y = y;
@@ -85,8 +85,8 @@ public class KeybindBox implements QuickImports {
         if (isListening) {
             text = "Listening...";
         } else {
-            String keyName = getKeyName(keySetting.getValue());
-            text = keyName.isEmpty() ? "None" : keyName;
+            String keyName = keySetting.getKeyName();
+            text = keyName.equals("None") ? "None" : keyName;
         }
         
         float textX = x + (width - font.getWidth(text, 6)) / 2;
@@ -100,61 +100,7 @@ public class KeybindBox implements QuickImports {
         return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
     }
 
-    private String getKeyName(int keyCode) {
-        if (keyCode == 0) return "";
-        if (keyCode >= 1000 && keyCode <= 1007) {
-            int mouseButton = keyCode - 1000;
-            switch (mouseButton) {
-                case 0: return "LMB";
-                case 1: return "RMB";
-                case 2: return "MMB";
-                default: return "MButton" + mouseButton;
-            }
-        }
-        
-        switch (keyCode) {
-            case GLFW.GLFW_KEY_SPACE: return "Space";
-            case GLFW.GLFW_KEY_ENTER: return "Enter";
-            case GLFW.GLFW_KEY_TAB: return "Tab";
-            case GLFW.GLFW_KEY_LEFT_SHIFT: return "LShift";
-            case GLFW.GLFW_KEY_RIGHT_SHIFT: return "RShift";
-            case GLFW.GLFW_KEY_LEFT_CONTROL: return "LCtrl";
-            case GLFW.GLFW_KEY_RIGHT_CONTROL: return "RCtrl";
-            case GLFW.GLFW_KEY_LEFT_ALT: return "LAlt";
-            case GLFW.GLFW_KEY_RIGHT_ALT: return "RAlt";
-            case GLFW.GLFW_KEY_ESCAPE: return "Esc";
-            case GLFW.GLFW_KEY_BACKSPACE: return "Backspace";
-            case GLFW.GLFW_KEY_DELETE: return "Delete";
-            case GLFW.GLFW_KEY_INSERT: return "Insert";
-            case GLFW.GLFW_KEY_HOME: return "Home";
-            case GLFW.GLFW_KEY_END: return "End";
-            case GLFW.GLFW_KEY_PAGE_UP: return "PgUp";
-            case GLFW.GLFW_KEY_PAGE_DOWN: return "PgDn";
-            case GLFW.GLFW_KEY_UP: return "Up";
-            case GLFW.GLFW_KEY_DOWN: return "Down";
-            case GLFW.GLFW_KEY_LEFT: return "Left";
-            case GLFW.GLFW_KEY_RIGHT: return "Right";
-            case GLFW.GLFW_KEY_F1: return "F1";
-            case GLFW.GLFW_KEY_F2: return "F2";
-            case GLFW.GLFW_KEY_F3: return "F3";
-            case GLFW.GLFW_KEY_F4: return "F4";
-            case GLFW.GLFW_KEY_F5: return "F5";
-            case GLFW.GLFW_KEY_F6: return "F6";
-            case GLFW.GLFW_KEY_F7: return "F7";
-            case GLFW.GLFW_KEY_F8: return "F8";
-            case GLFW.GLFW_KEY_F9: return "F9";
-            case GLFW.GLFW_KEY_F10: return "F10";
-            case GLFW.GLFW_KEY_F11: return "F11";
-            case GLFW.GLFW_KEY_F12: return "F12";
-            default:
-                if (keyCode >= GLFW.GLFW_KEY_A && keyCode <= GLFW.GLFW_KEY_Z) {
-                    return String.valueOf((char) (keyCode - GLFW.GLFW_KEY_A + 'A'));
-                } else if (keyCode >= GLFW.GLFW_KEY_0 && keyCode <= GLFW.GLFW_KEY_9) {
-                    return String.valueOf((char) (keyCode - GLFW.GLFW_KEY_0 + '0'));
-                }
-                return "Key" + keyCode;
-        }
-    }
+
 
     public boolean isListening() {
         return isListening;

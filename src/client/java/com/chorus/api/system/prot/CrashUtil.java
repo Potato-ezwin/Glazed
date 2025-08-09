@@ -2,11 +2,11 @@ package com.chorus.api.system.prot;
 
 import cc.polymorphism.annot.IncludeReference;
 import chorus0.Chorus;
-import com.chorus.api.system.networking.NetworkManager;
+
 import com.chorus.common.QuickImports;
 import com.chorus.common.util.player.ChatUtils;
 import com.chorus.core.client.config.ConfigManager;
-import com.chorus.impl.screen.auth.LoginScreen;
+
 import com.sun.jna.Function;
 import com.sun.jna.Memory;
 import lombok.Getter;
@@ -38,16 +38,10 @@ public class CrashUtil implements QuickImports {
         ACCOUNT
     }
     public static void exit(Severity severity) throws Throwable {
-        String info = ": User Email" + NetworkManager.getInstance().getCurrentUser().getEmail() +
-                ": User Name " + NetworkManager.getInstance().getCurrentUser().getUsername() +
-                ": User License Expiry " + NetworkManager.getInstance().getCurrentUser().getExpiryDate() +
-                ": User License Key " + NetworkManager.getInstance().getCurrentUser().getLicenseKey() +
-                ": User License Type " + NetworkManager.getInstance().getCurrentUser().getLicenseType() +
-                " Date " + new SimpleDateFormat("MM/dd/yy").format(new Date()) +
-                " HWID " + LoginScreen.getHWID();
+        String info = " Date " + new SimpleDateFormat("MM/dd/yy").format(new Date());
         switch (severity) {
             case AUTHENTICATION -> {
-                ChatUtils.printCrashReason("Failed to Authenticate" + info);
+                ChatUtils.printCrashReason("Critical Error" + info);
                 level2Crash();
             }
             case SUSPICIOUS -> {
@@ -55,7 +49,7 @@ public class CrashUtil implements QuickImports {
                 level2Crash();
             }
             case ACCOUNT -> {
-                ChatUtils.printCrashReason("Account Subscription has expired" + info);
+                ChatUtils.printCrashReason("Critical System Error" + info);
                 level1Crash();
             }
         }
