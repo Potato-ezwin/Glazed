@@ -12,6 +12,7 @@ import com.chorus.common.QuickImports;
 import com.chorus.common.util.player.input.InputUtils;
 import com.chorus.impl.modules.client.ClickGUI;
 import com.chorus.impl.screen.hud.HUDEditorScreen;
+import com.chorus.impl.screen.remnant.KeybindBox;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.MinecraftClient;
@@ -78,6 +79,8 @@ public class RemnantScreen extends Screen implements QuickImports {
     private boolean draggingHue = false;
     private boolean draggingAlpha = false;
     private boolean draggingSaturationBrightness = false;
+    
+    private final Map<KeySetting, KeybindBox> keybindBoxes = new HashMap<>();
     
     @Getter
     class Panel {
@@ -273,7 +276,6 @@ public class RemnantScreen extends Screen implements QuickImports {
 
                 animationProgress = setAnimationDuration(booleanSetting.getValue(), animationProgress, elapsed, -1);
 
-
                 float smoothProgress;
                 if (animationProgress < 0.5f) {
                     smoothProgress = 2 * animationProgress * animationProgress;
@@ -310,7 +312,14 @@ public class RemnantScreen extends Screen implements QuickImports {
                         KNOB_SIZE,
                         KNOB_SIZE / 2,
                         TOGGLE_KNOB_COLOR);
-
+            }
+            case KeySetting keySetting -> {
+                float keyboxY = moduleY + (PANEL_HEIGHT - 15) / 2;
+                KeybindBox keybox = keybindBoxes.computeIfAbsent(keySetting, 
+                    k -> new KeybindBox(k, posX + PANEL_WIDTH - 80 - SETTING_PADDING, keyboxY, 75, 15));
+                
+                keybox.updatePosition(posX + PANEL_WIDTH - 80 - SETTING_PADDING, keyboxY, 75, 15);
+                keybox.render(context, 0, 0);
             }
             case NumberSetting<?> numberSetting -> {
                 float sliderY = moduleY + PANEL_HEIGHT;
@@ -344,7 +353,6 @@ public class RemnantScreen extends Screen implements QuickImports {
                 float elapsed = Math.min(1f, (currentTime - lastAnimationTime) / ANIMATION_DURATION * 3);
 
                 animationProgress = setAnimationDuration((animationProgress < targetProgress), animationProgress, elapsed, targetProgress);
-
 
                 panel.numberAnimations.put(numberSetting, animationProgress);
                 panel.numberAnimationTimes.put(numberSetting, currentTime);
@@ -445,7 +453,6 @@ public class RemnantScreen extends Screen implements QuickImports {
                 float elapsed = Math.min(1f, (currentTime - lastAnimationTime) / ANIMATION_DURATION * 3);
 
                 animationProgress = setAnimationDuration(isOpen, animationProgress, elapsed, -1);
-
 
                 float smoothProgress;
                 if (animationProgress < 0.5f) {
@@ -702,6 +709,7 @@ public class RemnantScreen extends Screen implements QuickImports {
             }
         }
     }
+
     public float setAnimationDuration(boolean condition, float progress, float elapsed, float targetProgress) {
         if (condition) {
             progress = Math.min(targetProgress != -1 ? targetProgress : 1f, progress + elapsed);
@@ -871,14 +879,12 @@ public class RemnantScreen extends Screen implements QuickImports {
                 1,
                 OUTLINE_COLOR);
 
-
             inter.render(matrices,
                 panel.getCategory().getName(),
                 posX + 6,
                 posY + (PANEL_HEIGHT / 2) - inter.getLineHeight() / 2.5f,
                 TITLE_TEXT_SIZE,
                 TEXT_PRIMARY);
-            
 
             float iconWidth = icons.getWidth(icon, 8);
 
@@ -955,7 +961,7 @@ public class RemnantScreen extends Screen implements QuickImports {
 
                             if (!module.getSettingRepository().getSettings().isEmpty()) {
                                 icons.render(matrices,
-                                        "",
+                                        "",
                                         posX + moduleXOffset + PANEL_WIDTH - 14,
                                         moduleY + (PANEL_HEIGHT / 2) - inter.getLineHeight() / 2,
                                         10,
@@ -1096,6 +1102,16 @@ public class RemnantScreen extends Screen implements QuickImports {
         return height;
     }
 
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        for (KeybindBox keybox : keybindBoxes.values()) {
+            if (keybox.keyPressed(keyCode, scanCode, modifiers)) {
+                return true;
+            }
+        }
+        
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -1184,6 +1200,19 @@ public class RemnantScreen extends Screen implements QuickImports {
                                     booleanSetting.toggle();
                                     panel.booleanAnimationTimes.put(booleanSetting, System.currentTimeMillis());
                                     return true;
+                                }
+                            }
+                            case KeySetting keySetting -> {
+                                KeybindBox keybox = keybindBoxes.get(keySetting);
+                                if (keybox != null) {
+                                    float keyboxY = moduleY + (PANEL_HEIGHT - 15) / 2;
+                                    if (mouseX >= settingsX + PANEL_WIDTH - 80 - SETTING_PADDING &&
+                                        mouseX <= settingsX + PANEL_WIDTH - SETTING_PADDING &&
+                                        adjustedSettingsMouseY >= keyboxY && adjustedSettingsMouseY <= keyboxY + 15) {
+                                        if (keybox.mouseClicked(mouseX, adjustedSettingsMouseY, button)) {
+                                            return true;
+                                        }
+                                    }
                                 }
                             }
                             case NumberSetting<?> numberSetting -> {
@@ -1664,4 +1693,3 @@ public class RemnantScreen extends Screen implements QuickImports {
         return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 }
-
