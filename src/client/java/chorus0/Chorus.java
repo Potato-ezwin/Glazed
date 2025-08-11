@@ -25,7 +25,6 @@ import com.chorus.impl.modules.movement.*;
 import com.chorus.impl.modules.other.*;
 import com.chorus.impl.modules.utility.*;
 import com.chorus.impl.modules.visual.*;
-import com.chorus.impl.modules.example.*;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -178,9 +177,8 @@ public final class Chorus implements ModInitializer {
                 //KillAura.class,
                 SelfDestruct.class,
                 TickBase.class,
-                Prevent.class,
+                Prevent.class
                 //CrystalAura.class
-                KeybindExample.class
         );
 
         moduleClasses.stream()

@@ -12,7 +12,6 @@ import com.chorus.common.QuickImports;
 import com.chorus.common.util.player.input.InputUtils;
 import com.chorus.impl.modules.client.ClickGUI;
 import com.chorus.impl.screen.hud.HUDEditorScreen;
-
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.MinecraftClient;
@@ -79,9 +78,7 @@ public class RemnantScreen extends Screen implements QuickImports {
     private boolean draggingHue = false;
     private boolean draggingAlpha = false;
     private boolean draggingSaturationBrightness = false;
-    
-    private final Map<KeybindSetting, KeybindBox> keybindBoxes = new HashMap<>();
-    
+
     @Getter
     class Panel {
         private final ModuleCategory category;
@@ -201,14 +198,14 @@ public class RemnantScreen extends Screen implements QuickImports {
             if (isDragging) {
                 float newX = (float)(mouseX - dragX);
                 float newY = (float)(mouseY - dragY);
-                
+
                 float screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
                 float screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
-                
+
                 newX = Math.max(0, Math.min(screenWidth - PANEL_WIDTH, newX));
-                
+
                 newY = Math.max(0, Math.min(screenHeight - PANEL_HEIGHT, newY));
-                
+
                 position = new Vector2f(newX, newY);
             }
         }
@@ -228,9 +225,9 @@ public class RemnantScreen extends Screen implements QuickImports {
         for (ModuleCategory category : ModuleCategory.values()) {
             panels.put(category, new Panel(category, true, new Vector2f(x, INITIAL_Y)));
             panels.get(category).setModules(
-                moduleManager.getModules().stream()
-                    .filter(module -> module.getCategory() == category)
-                    .collect(Collectors.toList())
+                    moduleManager.getModules().stream()
+                            .filter(module -> module.getCategory() == category)
+                            .collect(Collectors.toList())
             );
             x += PANEL_WIDTH + PANEL_SPACING;
         }
@@ -239,7 +236,7 @@ public class RemnantScreen extends Screen implements QuickImports {
     private void recenterPanels() {
         float totalWidth = ModuleCategory.values().length * PANEL_WIDTH + (ModuleCategory.values().length - 1) * PANEL_SPACING;
         float x = mc.getWindow().getScaledWidth() / 2f - totalWidth / 2f;
-        
+
         for (ModuleCategory category : ModuleCategory.values()) {
             Panel panel = panels.get(category);
             if (panel != null) {
@@ -257,11 +254,11 @@ public class RemnantScreen extends Screen implements QuickImports {
         float posX = position.getX();
         String result = (setting.getName() != null && setting.getName().length() > size) ? setting.getName().substring(0, size) + "..." : setting.getName();
         font.render(context.getMatrices(),
-            result,
-            posX + SETTING_PADDING,
-            moduleY + 4,
-            SETTING_TEXT_SIZE,
-            TEXT_SECONDARY);
+                result,
+                posX + SETTING_PADDING,
+                moduleY + 4,
+                SETTING_TEXT_SIZE,
+                TEXT_SECONDARY);
 
         switch (setting) {
             case BooleanSetting booleanSetting -> {
@@ -275,6 +272,7 @@ public class RemnantScreen extends Screen implements QuickImports {
                 float elapsed = Math.min(1f, (currentTime - lastAnimationTime) / ANIMATION_DURATION * 3);
 
                 animationProgress = setAnimationDuration(booleanSetting.getValue(), animationProgress, elapsed, -1);
+
 
                 float smoothProgress;
                 if (animationProgress < 0.5f) {
@@ -312,14 +310,7 @@ public class RemnantScreen extends Screen implements QuickImports {
                         KNOB_SIZE,
                         KNOB_SIZE / 2,
                         TOGGLE_KNOB_COLOR);
-            }
-            case KeybindSetting keySetting -> {
-                float keyboxY = moduleY + (PANEL_HEIGHT - 15) / 2;
-                KeybindBox keybox = keybindBoxes.computeIfAbsent(keySetting, 
-                    k -> new KeybindBox(k, posX + PANEL_WIDTH - 80 - SETTING_PADDING, keyboxY, 75, 15));
-                
-                keybox.updatePosition(posX + PANEL_WIDTH - 80 - SETTING_PADDING, keyboxY, 75, 15);
-                keybox.render(context, 0, 0);
+
             }
             case NumberSetting<?> numberSetting -> {
                 float sliderY = moduleY + PANEL_HEIGHT;
@@ -353,6 +344,7 @@ public class RemnantScreen extends Screen implements QuickImports {
                 float elapsed = Math.min(1f, (currentTime - lastAnimationTime) / ANIMATION_DURATION * 3);
 
                 animationProgress = setAnimationDuration((animationProgress < targetProgress), animationProgress, elapsed, targetProgress);
+
 
                 panel.numberAnimations.put(numberSetting, animationProgress);
                 panel.numberAnimationTimes.put(numberSetting, currentTime);
@@ -453,6 +445,7 @@ public class RemnantScreen extends Screen implements QuickImports {
                 float elapsed = Math.min(1f, (currentTime - lastAnimationTime) / ANIMATION_DURATION * 3);
 
                 animationProgress = setAnimationDuration(isOpen, animationProgress, elapsed, -1);
+
 
                 float smoothProgress;
                 if (animationProgress < 0.5f) {
@@ -582,7 +575,7 @@ public class RemnantScreen extends Screen implements QuickImports {
 
                 panel.colorAnimations.put(colorSetting, animationProgress);
                 panel.colorAnimationTimes.put(colorSetting, currentTime);
-                
+
                 if (animationProgress > 0 && animationProgress < 1 && selectedModule != null && selectedPanel == panel) {
                     float targetHeight = PANEL_HEIGHT;
                     targetHeight += PANEL_HEIGHT + 2;
@@ -601,45 +594,45 @@ public class RemnantScreen extends Screen implements QuickImports {
                         float padding = (s instanceof NumberSetting<?> || s instanceof RangeSetting) ? 2 : 0;
                         targetHeight += extraHeight + padding - 2;
                     }
-                    
+
                     targetHeight += 2;
                     panel.updateHeight(targetHeight);
                 }
 
                 font.render(context.getMatrices(),
-                    colorSetting.getName(),
+                        colorSetting.getName(),
                         posX + SETTING_PADDING,
-                    moduleY + 4,
-                    SETTING_TEXT_SIZE,
-                    TEXT_SECONDARY);
+                        moduleY + 4,
+                        SETTING_TEXT_SIZE,
+                        TEXT_SECONDARY);
 
                 Render2DEngine.drawRoundedRect(context.getMatrices(),
                         posX + PANEL_WIDTH - TOGGLE_WIDTH - SETTING_PADDING - 2,
-                    moduleY + (PANEL_HEIGHT - TOGGLE_HEIGHT) / 2,
-                    TOGGLE_WIDTH,
-                    TOGGLE_HEIGHT,
-                    TOGGLE_HEIGHT / 2.3f,
-                    colorSetting.getValue());
+                        moduleY + (PANEL_HEIGHT - TOGGLE_HEIGHT) / 2,
+                        TOGGLE_WIDTH,
+                        TOGGLE_HEIGHT,
+                        TOGGLE_HEIGHT / 2.3f,
+                        colorSetting.getValue());
 
                 if (expanded) {
                     float baseY = moduleY + PANEL_HEIGHT;
                     Render2DEngine.drawRoundedRect(context.getMatrices(),
                             posX + SETTING_PADDING,
-                        baseY,
-                        PANEL_WIDTH - SETTING_PADDING * 2,
-                        60 * animationProgress,
-                        2f,
-                        new Color(0xFF141414));
+                            baseY,
+                            PANEL_WIDTH - SETTING_PADDING * 2,
+                            60 * animationProgress,
+                            2f,
+                            new Color(0xFF141414));
 
                     float[] hsb = Color.RGBtoHSB(colorSetting.getRed(), colorSetting.getGreen(), colorSetting.getBlue(), null);
-                    
+
                     Render2DEngine.drawColorPicker(context.getMatrices(),
                             posX + SETTING_PADDING,
-                        baseY,
-                        PANEL_WIDTH - SETTING_PADDING * 2,
-                        60,
-                        hsb[0],
-                        255);
+                            baseY,
+                            PANEL_WIDTH - SETTING_PADDING * 2,
+                            60,
+                            hsb[0],
+                            255);
 
                     float hueSliderY = baseY + 65 * animationProgress;
                     float segmentWidth = (PANEL_WIDTH - SETTING_PADDING * 2) / 6.0f;
@@ -648,14 +641,14 @@ public class RemnantScreen extends Screen implements QuickImports {
                         float hue2 = (i + 1) / 6.0f;
                         Color color1 = Color.getHSBColor(hue1, 1.0f, 1.0f);
                         Color color2 = Color.getHSBColor(hue2, 1.0f, 1.0f);
-                        
+
                         Render2DEngine.drawGradientRect(context.getMatrices(),
                                 posX + SETTING_PADDING + (segmentWidth * i),
-                            hueSliderY,
-                            segmentWidth,
-                            5,
-                            color1,
-                            color2);
+                                hueSliderY,
+                                segmentWidth,
+                                5,
+                                color1,
+                                color2);
                     }
                     float colorAlphaX = posX + SETTING_PADDING;
                     float colorAlphaY = hueSliderY + 10;
@@ -671,36 +664,36 @@ public class RemnantScreen extends Screen implements QuickImports {
                         if (draggingHue) {
                             float hueX = posX + SETTING_PADDING + (PANEL_WIDTH - SETTING_PADDING * 2) * hsb[0];
                             Render2DEngine.drawRoundedRect(context.getMatrices(),
-                                hueX - 2,
-                                hueSliderY - 2,
-                                4,
-                                9,
-                                2,
-                                Color.WHITE);
+                                    hueX - 2,
+                                    hueSliderY - 2,
+                                    4,
+                                    9,
+                                    2,
+                                    Color.WHITE);
                         }
                         if (draggingAlpha) {
                             float alphaX = posX + SETTING_PADDING + (PANEL_WIDTH - SETTING_PADDING * 2) * (colorSetting.getAlpha() / 255f);
                             Render2DEngine.drawRoundedRect(context.getMatrices(),
-                                alphaX - 2,
-                                colorAlphaY - 2,
-                                4,
-                                9,
-                                2,
-                                Color.WHITE);
+                                    alphaX - 2,
+                                    colorAlphaY - 2,
+                                    4,
+                                    9,
+                                    2,
+                                    Color.WHITE);
                         }
                         if (draggingSaturationBrightness) {
                             float saturationX = posX + SETTING_PADDING + (PANEL_WIDTH - SETTING_PADDING * 2) * hsb[1];
                             float constrainedBrightness = Math.max(0, Math.min(1, hsb[2]));
-                            
+
                             float brightnessY = baseY + 60 * (1 - constrainedBrightness);
-                            
+
                             Render2DEngine.drawRoundedRect(context.getMatrices(),
-                                saturationX - 2,
-                                brightnessY - 2,
-                                4,
-                                4,
-                                2,
-                                Color.WHITE);
+                                    saturationX - 2,
+                                    brightnessY - 2,
+                                    4,
+                                    4,
+                                    2,
+                                    Color.WHITE);
                         }
                     }
                 }
@@ -709,7 +702,6 @@ public class RemnantScreen extends Screen implements QuickImports {
             }
         }
     }
-
     public float setAnimationDuration(boolean condition, float progress, float elapsed, float targetProgress) {
         if (condition) {
             progress = Math.min(targetProgress != -1 ? targetProgress : 1f, progress + elapsed);
@@ -723,7 +715,7 @@ public class RemnantScreen extends Screen implements QuickImports {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         int currentWidth = mc.getWindow().getScaledWidth();
         int currentHeight = mc.getWindow().getScaledHeight();
-        
+
         if (currentWidth != lastScreenWidth || currentHeight != lastScreenHeight) {
             recenterPanels();
             lastScreenWidth = currentWidth;
@@ -738,9 +730,6 @@ public class RemnantScreen extends Screen implements QuickImports {
         if (mc.player != null) {
             inter.render(matrices, "HUD Editor", mc.getWindow().getScaledWidth() - inter.getWidth("HUD Editor", 8) - 10, 10, 8, Color.WHITE.getRGB());
         }
-
-
-
         boolean foundHoveredModule = false;
         long currentTime = System.currentTimeMillis();
 
@@ -752,9 +741,9 @@ public class RemnantScreen extends Screen implements QuickImports {
 
                 for (Module module : panel.getModules()) {
                     if (mouseX >= pos.getX() + moduleXOffset && mouseX <= pos.getX() + PANEL_WIDTH + moduleXOffset &&
-                        mouseY >= moduleY && mouseY <= moduleY + PANEL_HEIGHT &&
-                        mouseY >= pos.getY() + PANEL_HEIGHT + 2 && mouseY <= pos.getY() + panel.getCurrentHeight()) {
-                        
+                            mouseY >= moduleY && mouseY <= moduleY + PANEL_HEIGHT &&
+                            mouseY >= pos.getY() + PANEL_HEIGHT + 2 && mouseY <= pos.getY() + panel.getCurrentHeight()) {
+
                         foundHoveredModule = true;
                         if (hoveredModule != module) {
                             hoveredModule = module;
@@ -780,7 +769,7 @@ public class RemnantScreen extends Screen implements QuickImports {
                 float contentHeight = (PANEL_HEIGHT + 2) * panel.getModules().size();
                 float panelBottom = panel.getPosition().getY() + contentHeight + PANEL_HEIGHT + 4;
                 float screenHeight = mc.getWindow().getScaledHeight();
-                
+
                 if (panelBottom > screenHeight) {
                     float visibleHeight = screenHeight - panel.getPosition().getY() - PANEL_HEIGHT - 4;
                     panel.maxModuleScrollOffset = Math.max(0, contentHeight - visibleHeight);
@@ -861,41 +850,43 @@ public class RemnantScreen extends Screen implements QuickImports {
                     PANEL_WIDTH,
                     panelHeight + 1,
                     5,
-                8,
-                BACKGROUND_COLOR);
+                    8,
+                    BACKGROUND_COLOR);
 
             Render2DEngine.drawRoundedOutline(matrices,
                     posX,
-                posY,
-                PANEL_WIDTH,
+                    posY,
+                    PANEL_WIDTH,
                     panelHeight,
-                5,
-                1,
-                OUTLINE_COLOR);
+                    5,
+                    1,
+                    OUTLINE_COLOR);
+
 
             inter.render(matrices,
-                panel.getCategory().getName(),
-                posX + 6,
-                posY + (PANEL_HEIGHT / 2) - inter.getLineHeight() / 2.5f,
-                TITLE_TEXT_SIZE,
-                TEXT_PRIMARY);
+                    panel.getCategory().getName(),
+                    posX + 6,
+                    posY + (PANEL_HEIGHT / 2) - inter.getLineHeight() / 2.5f,
+                    TITLE_TEXT_SIZE,
+                    TEXT_PRIMARY);
+
 
             float iconWidth = icons.getWidth(icon, 8);
 
             icons.render(matrices,
-                icon,
-                posX + PANEL_WIDTH - 6 - iconWidth,
-                posY + (PANEL_HEIGHT / 2) - inter.getLineHeight() / 2.5f,
-                TITLE_TEXT_SIZE,
-                TEXT_PRIMARY);
+                    icon,
+                    posX + PANEL_WIDTH - 6 - iconWidth,
+                    posY + (PANEL_HEIGHT / 2) - inter.getLineHeight() / 2.5f,
+                    TITLE_TEXT_SIZE,
+                    TEXT_PRIMARY);
 
             float moduleY = posY + PANEL_HEIGHT + 2 - panel.getModuleScrollOffset();
             if (panel.isOpen()) {
                 context.enableScissor(
-                    (int) posX + 1,
-                    (int) (posY + PANEL_HEIGHT + 2),
-                    (int) (posX + PANEL_WIDTH - 1),
-                    (int) (posY + panelHeight)
+                        (int) posX + 1,
+                        (int) (posY + PANEL_HEIGHT + 2),
+                        (int) (posX + PANEL_WIDTH - 1),
+                        (int) (posY + panelHeight)
                 );
 
                 float settingsOffset = (1f - easeInOutCubic(panel.getSettingsAnimationProgress())) * PANEL_WIDTH;
@@ -904,24 +895,24 @@ public class RemnantScreen extends Screen implements QuickImports {
                 if (!panel.isShowingSettings() || panel.getSettingsAnimationProgress() < 1f) {
                     for (Module module : panel.getModules()) {
                         if (moduleY + PANEL_HEIGHT >= posY + PANEL_HEIGHT + 2 &&
-                            moduleY <= posY + panelHeight) {
+                                moduleY <= posY + panelHeight) {
                             Render2DEngine.drawRoundedOutline(matrices,
-                                posX + 2 + moduleXOffset,
-                                moduleY,
-                                PANEL_WIDTH - 4,
-                                PANEL_HEIGHT,
-                                2,
-                                OUTLINE_THICKNESS,
-                                OUTLINE_COLOR);
-
-                            if (module.isEnabled()) {
-                                Render2DEngine.drawRoundedRect(matrices,
                                     posX + 2 + moduleXOffset,
                                     moduleY,
                                     PANEL_WIDTH - 4,
                                     PANEL_HEIGHT,
                                     2,
+                                    OUTLINE_THICKNESS,
                                     OUTLINE_COLOR);
+
+                            if (module.isEnabled()) {
+                                Render2DEngine.drawRoundedRect(matrices,
+                                        posX + 2 + moduleXOffset,
+                                        moduleY,
+                                        PANEL_WIDTH - 4,
+                                        PANEL_HEIGHT,
+                                        2,
+                                        OUTLINE_COLOR);
                             }
 
                             String bind = InputUtils.getKeyName(module.getKey());
@@ -946,16 +937,16 @@ public class RemnantScreen extends Screen implements QuickImports {
                             }
 
                             inter.renderWithShadow(matrices,
-                                module.getName(),
-                                posX + 6 + moduleXOffset,
-                                moduleY + (PANEL_HEIGHT / 2) - inter.getLineHeight() / 2,
-                                8,
-                                module.isEnabled() ? 0xFFFFFFFF : 0xFFAAAAAA
+                                    module.getName(),
+                                    posX + 6 + moduleXOffset,
+                                    moduleY + (PANEL_HEIGHT / 2) - inter.getLineHeight() / 2,
+                                    8,
+                                    module.isEnabled() ? 0xFFFFFFFF : 0xFFAAAAAA
                             );
 
                             if (!module.getSettingRepository().getSettings().isEmpty()) {
                                 icons.render(matrices,
-                                        "",
+                                        "",
                                         posX + moduleXOffset + PANEL_WIDTH - 14,
                                         moduleY + (PANEL_HEIGHT / 2) - inter.getLineHeight() / 2,
                                         10,
@@ -971,28 +962,28 @@ public class RemnantScreen extends Screen implements QuickImports {
                     float settingsX = posX + settingsOffset;
 
                     inter.render(matrices,
-                        selectedModule.getName(),
-                        settingsX + 6,
-                        moduleY + (PANEL_HEIGHT / 2) - inter.getLineHeight() / 2,
-                        7,
-                        selectedModule.isEnabled() ? 0xFFFFFFFF : 0xFFAAAAAA);
+                            selectedModule.getName(),
+                            settingsX + 6,
+                            moduleY + (PANEL_HEIGHT / 2) - inter.getLineHeight() / 2,
+                            7,
+                            selectedModule.isEnabled() ? 0xFFFFFFFF : 0xFFAAAAAA);
 
                     String backArrow = "\ue0ab";
                     float arrowWidth = icons.getWidth(backArrow, 8);
                     icons.render(matrices,
-                        backArrow,
-                        settingsX + PANEL_WIDTH - 10 - arrowWidth,
-                        moduleY + (PANEL_HEIGHT / 2) - inter.getLineHeight() / 2,
-                        8,
-                        0xFF909090);
+                            backArrow,
+                            settingsX + PANEL_WIDTH - 10 - arrowWidth,
+                            moduleY + (PANEL_HEIGHT / 2) - inter.getLineHeight() / 2,
+                            8,
+                            0xFF909090);
 
                     Render2DEngine.drawLine(matrices,
-                        settingsX + 4,
-                        moduleY + PANEL_HEIGHT,
-                        settingsX + PANEL_WIDTH - 4,
-                        moduleY + PANEL_HEIGHT,
-                        1,
-                        new Color(100, 100, 100, 100));
+                            settingsX + 4,
+                            moduleY + PANEL_HEIGHT,
+                            settingsX + PANEL_WIDTH - 4,
+                            moduleY + PANEL_HEIGHT,
+                            1,
+                            new Color(100, 100, 100, 100));
 
                     moduleY += PANEL_HEIGHT + 4;
 
@@ -1005,15 +996,15 @@ public class RemnantScreen extends Screen implements QuickImports {
                     }
 
                     context.enableScissor(
-                        (int) settingsX + 1,
-                        (int) (posY + PANEL_HEIGHT + 2),
-                        (int) (settingsX + PANEL_WIDTH - 1),
-                        (int) (posY + panelHeight)
+                            (int) settingsX + 1,
+                            (int) (posY + PANEL_HEIGHT + 2),
+                            (int) (settingsX + PANEL_WIDTH - 1),
+                            (int) (posY + panelHeight)
                     );
 
                     for (Setting<?> setting : settings) {
                         if (moduleY + getSettingHeight(setting, panel) >= posY + PANEL_HEIGHT + 2 &&
-                            moduleY <= posY + panelHeight) {
+                                moduleY <= posY + panelHeight) {
                             renderSetting(setting, context, new Vector2f(settingsX, posY), moduleY, inter);
                         }
                         float padding = (setting instanceof NumberSetting<?> || setting instanceof RangeSetting) ? 2 : 0;
@@ -1035,34 +1026,34 @@ public class RemnantScreen extends Screen implements QuickImports {
             String description = hoveredModule.getDescription();
             float tooltipWidth = inter.getWidth(description, TOOLTIP_TEXT_SIZE) + TOOLTIP_PADDING * 3;
             float tooltipHeight = inter.getLineHeight(TOOLTIP_TEXT_SIZE) + TOOLTIP_PADDING * 2;
-            
+
             float tooltipX = Math.min(mouseX + 10, mc.getWindow().getScaledWidth() - tooltipWidth - 5);
             float tooltipY = Math.min(mouseY + 10, mc.getWindow().getScaledHeight() - tooltipHeight - 5);
 
             Render2DEngine.drawBlurredRoundedRect(matrices,
-                tooltipX,
-                tooltipY,
-                tooltipWidth,
-                tooltipHeight,
-                4,
-                8,
-                BACKGROUND_COLOR);
+                    tooltipX,
+                    tooltipY,
+                    tooltipWidth,
+                    tooltipHeight,
+                    4,
+                    8,
+                    BACKGROUND_COLOR);
 
             Render2DEngine.drawRoundedOutline(matrices,
-                tooltipX,
-                tooltipY,
-                tooltipWidth,
-                tooltipHeight,
-                4,
-                1,
-                OUTLINE_COLOR);
+                    tooltipX,
+                    tooltipY,
+                    tooltipWidth,
+                    tooltipHeight,
+                    4,
+                    1,
+                    OUTLINE_COLOR);
 
             inter.render(matrices,
-                description,
-                tooltipX + TOOLTIP_PADDING,
-                tooltipY + TOOLTIP_PADDING,
-                TOOLTIP_TEXT_SIZE,
-                TEXT_PRIMARY);
+                    description,
+                    tooltipX + TOOLTIP_PADDING,
+                    tooltipY + TOOLTIP_PADDING,
+                    TOOLTIP_TEXT_SIZE,
+                    TEXT_PRIMARY);
         }
     }
 
@@ -1096,16 +1087,6 @@ public class RemnantScreen extends Screen implements QuickImports {
         return height;
     }
 
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        for (KeybindBox keybox : keybindBoxes.values()) {
-            if (keybox.keyPressed(keyCode, scanCode, modifiers)) {
-                return true;
-            }
-        }
-        
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -1116,9 +1097,9 @@ public class RemnantScreen extends Screen implements QuickImports {
                 float hudEditorWidth = font.getWidth(hudEditorText, 8);
                 float hudEditorX = mc.getWindow().getScaledWidth() - hudEditorWidth - 10;
                 float hudEditorY = 10;
-                
+
                 if (mouseX >= hudEditorX && mouseX <= hudEditorX + hudEditorWidth &&
-                    mouseY >= hudEditorY && mouseY <= hudEditorY + font.getLineHeight(8)) {
+                        mouseY >= hudEditorY && mouseY <= hudEditorY + font.getLineHeight(8)) {
                     mc.setScreen(HUDEditorScreen.getINSTANCE());
                     Chorus.getInstance().getModuleManager().getModule(ClickGUI.class).onDisable();
                     return true;
@@ -1129,7 +1110,7 @@ public class RemnantScreen extends Screen implements QuickImports {
                 Vector2f pos = panel.getPosition();
 
                 if (mouseX >= pos.getX() && mouseX <= pos.getX() + PANEL_WIDTH &&
-                    mouseY >= pos.getY() && mouseY <= pos.getY() + PANEL_HEIGHT) {
+                        mouseY >= pos.getY() && mouseY <= pos.getY() + PANEL_HEIGHT) {
                     panel.startDragging(mouseX, mouseY);
                     return true;
                 }
@@ -1142,8 +1123,8 @@ public class RemnantScreen extends Screen implements QuickImports {
                     float moduleXOffset = -panel.getSettingsAnimationProgress() * PANEL_WIDTH;
                     for (Module module : panel.getModules()) {
                         if (mouseX >= pos.getX() + moduleXOffset && mouseX <= pos.getX() + PANEL_WIDTH + moduleXOffset &&
-                            adjustedMouseY >= moduleY && adjustedMouseY <= moduleY + PANEL_HEIGHT &&
-                            mouseY >= pos.getY() + PANEL_HEIGHT + 2 && mouseY <= pos.getY() + panel.getCurrentHeight()) {
+                                adjustedMouseY >= moduleY && adjustedMouseY <= moduleY + PANEL_HEIGHT &&
+                                mouseY >= pos.getY() + PANEL_HEIGHT + 2 && mouseY <= pos.getY() + panel.getCurrentHeight()) {
                             if (module.isEnabled()) {
                                 module.onDisable();
                             } else {
@@ -1158,106 +1139,93 @@ public class RemnantScreen extends Screen implements QuickImports {
                     float settingsX = pos.getX() + settingsOffset;
                     float adjustedSettingsMouseY = (float)mouseY + panel.settingScrollOffset;
 
-                if (mouseX >= settingsX && mouseX <= settingsX + PANEL_WIDTH &&
-                    mouseY >= moduleY && mouseY <= moduleY + PANEL_HEIGHT) {
-                    panel.setShowingSettings(false);
-                    panel.lastSettingsAnimationTime = System.currentTimeMillis();
-                    selectedModule = null;
-                    selectedPanel = null;
-                    return true;
-                }
-                moduleY += PANEL_HEIGHT + 4;
-
-                List<Setting<?>> settings = new ArrayList<>();
-                for (Setting<?> setting : selectedModule.getSettingRepository().getSettings().values()) {
-                    if (!(setting instanceof SettingCategory)) {
-                        settings.add(setting);
+                    if (mouseX >= settingsX && mouseX <= settingsX + PANEL_WIDTH &&
+                            mouseY >= moduleY && mouseY <= moduleY + PANEL_HEIGHT) {
+                        panel.setShowingSettings(false);
+                        panel.lastSettingsAnimationTime = System.currentTimeMillis();
+                        selectedModule = null;
+                        selectedPanel = null;
+                        return true;
                     }
-                }
+                    moduleY += PANEL_HEIGHT + 4;
 
-                for (Setting<?> setting : settings) {
-                    float settingHeight = getSettingHeight(setting, panel);
+                    List<Setting<?>> settings = new ArrayList<>();
+                    for (Setting<?> setting : selectedModule.getSettingRepository().getSettings().values()) {
+                        if (!(setting instanceof SettingCategory)) {
+                            settings.add(setting);
+                        }
+                    }
 
-                    if (mouseX >= settingsX + 4 && mouseX <= settingsX + PANEL_WIDTH - 4 &&
-                        adjustedSettingsMouseY >= moduleY && adjustedSettingsMouseY <= moduleY + settingHeight &&
-                        mouseY >= pos.getY() + PANEL_HEIGHT + 2 && mouseY <= pos.getY() + panel.getCurrentHeight()) {
+                    for (Setting<?> setting : settings) {
+                        float settingHeight = getSettingHeight(setting, panel);
 
-                        switch (setting) {
-                            case BooleanSetting booleanSetting -> {
-                                float toggleWidth = 18;
-                                float toggleHeight = 9;
-                                float toggleY = moduleY + (PANEL_HEIGHT - toggleHeight) / 2;
+                        if (mouseX >= settingsX + 4 && mouseX <= settingsX + PANEL_WIDTH - 4 &&
+                                adjustedSettingsMouseY >= moduleY && adjustedSettingsMouseY <= moduleY + settingHeight &&
+                                mouseY >= pos.getY() + PANEL_HEIGHT + 2 && mouseY <= pos.getY() + panel.getCurrentHeight()) {
 
-                                if (mouseX >= settingsX + PANEL_WIDTH - toggleWidth - 8 &&
-                                    mouseX <= settingsX + PANEL_WIDTH - 8 &&
-                                    adjustedSettingsMouseY >= toggleY && adjustedSettingsMouseY <= toggleY + toggleHeight) {
-                                    booleanSetting.toggle();
-                                    panel.booleanAnimationTimes.put(booleanSetting, System.currentTimeMillis());
-                                    return true;
+                            switch (setting) {
+                                case BooleanSetting booleanSetting -> {
+                                    float toggleWidth = 18;
+                                    float toggleHeight = 9;
+                                    float toggleY = moduleY + (PANEL_HEIGHT - toggleHeight) / 2;
+
+                                    if (mouseX >= settingsX + PANEL_WIDTH - toggleWidth - 8 &&
+                                            mouseX <= settingsX + PANEL_WIDTH - 8 &&
+                                            adjustedSettingsMouseY >= toggleY && adjustedSettingsMouseY <= toggleY + toggleHeight) {
+                                        booleanSetting.toggle();
+                                        panel.booleanAnimationTimes.put(booleanSetting, System.currentTimeMillis());
+                                        return true;
+                                    }
                                 }
-                            }
-                            case KeybindSetting keySetting -> {
-                                KeybindBox keybox = keybindBoxes.get(keySetting);
-                                if (keybox != null) {
-                                    float keyboxY = moduleY + (PANEL_HEIGHT - 15) / 2;
-                                    if (mouseX >= settingsX + PANEL_WIDTH - 80 - SETTING_PADDING &&
-                                        mouseX <= settingsX + PANEL_WIDTH - SETTING_PADDING &&
-                                        adjustedSettingsMouseY >= keyboxY && adjustedSettingsMouseY <= keyboxY + 15) {
-                                        if (keybox.mouseClicked(mouseX, adjustedSettingsMouseY, button)) {
-                                            return true;
+                                case NumberSetting<?> numberSetting -> {
+                                    float sliderY = moduleY + PANEL_HEIGHT;
+                                    if (adjustedSettingsMouseY >= sliderY - 5 && adjustedSettingsMouseY <= sliderY + 7) {
+                                        draggingNumberSetting = numberSetting;
+                                        float relativeX = (float) (mouseX - (settingsX + 6));
+                                        float totalWidth = PANEL_WIDTH - 12;
+                                        float percentage = Math.max(0, Math.min(1, relativeX / totalWidth));
+
+                                        float range = numberSetting.getMaxValue().floatValue() - numberSetting.getMinValue().floatValue();
+                                        float newValue = numberSetting.getMinValue().floatValue() + (range * percentage);
+
+                                        if (numberSetting.getValue() instanceof Integer) {
+                                            @SuppressWarnings("unchecked")
+                                            NumberSetting<Integer> intSetting = (NumberSetting<Integer>) numberSetting;
+                                            intSetting.setValue((int) Math.round(newValue));
+                                        } else if (numberSetting.getValue() instanceof Float) {
+                                            @SuppressWarnings("unchecked")
+                                            NumberSetting<Float> floatSetting = (NumberSetting<Float>) numberSetting;
+                                            floatSetting.setValue(newValue);
+                                        } else if (numberSetting.getValue() instanceof Double) {
+                                            @SuppressWarnings("unchecked")
+                                            NumberSetting<Double> doubleSetting = (NumberSetting<Double>) numberSetting;
+                                            doubleSetting.setValue((double) newValue);
                                         }
+                                        return true;
                                     }
                                 }
-                            }
-                            case NumberSetting<?> numberSetting -> {
-                                float sliderY = moduleY + PANEL_HEIGHT;
-                                if (adjustedSettingsMouseY >= sliderY - 5 && adjustedSettingsMouseY <= sliderY + 7) {
-                                    draggingNumberSetting = numberSetting;
-                                    float relativeX = (float) (mouseX - (settingsX + 6));
-                                    float totalWidth = PANEL_WIDTH - 12;
-                                    float percentage = Math.max(0, Math.min(1, relativeX / totalWidth));
+                                case RangeSetting rangeSetting -> {
+                                    float sliderY = moduleY + PANEL_HEIGHT;
+                                    if (adjustedSettingsMouseY >= sliderY - 5 && adjustedSettingsMouseY <= sliderY + 7) {
+                                        draggingRangeSetting = rangeSetting;
+                                        float relativeX = (float) (mouseX - (settingsX + 6));
+                                        float totalWidth = PANEL_WIDTH - 12;
+                                        float percentage = Math.max(0, Math.min(1, relativeX / totalWidth));
 
-                                    float range = numberSetting.getMaxValue().floatValue() - numberSetting.getMinValue().floatValue();
-                                    float newValue = numberSetting.getMinValue().floatValue() + (range * percentage);
+                                        float minProgress = (rangeSetting.getValueMin().floatValue() - rangeSetting.getMin().floatValue()) /
+                                                (rangeSetting.getMax().floatValue() - rangeSetting.getMin().floatValue());
+                                        float maxProgress = (rangeSetting.getValueMax().floatValue() - rangeSetting.getMin().floatValue()) /
+                                                (rangeSetting.getMax().floatValue() - rangeSetting.getMin().floatValue());
 
-                                    if (numberSetting.getValue() instanceof Integer) {
-                                        @SuppressWarnings("unchecked")
-                                        NumberSetting<Integer> intSetting = (NumberSetting<Integer>) numberSetting;
-                                        intSetting.setValue((int) Math.round(newValue));
-                                    } else if (numberSetting.getValue() instanceof Float) {
-                                        @SuppressWarnings("unchecked")
-                                        NumberSetting<Float> floatSetting = (NumberSetting<Float>) numberSetting;
-                                        floatSetting.setValue(newValue);
-                                    } else if (numberSetting.getValue() instanceof Double) {
-                                        @SuppressWarnings("unchecked")
-                                        NumberSetting<Double> doubleSetting = (NumberSetting<Double>) numberSetting;
-                                        doubleSetting.setValue((double) newValue);
-                                    }
-                                    return true;
-                                }
-                            }
-                            case RangeSetting rangeSetting -> {
-                                float sliderY = moduleY + PANEL_HEIGHT;
-                                if (adjustedSettingsMouseY >= sliderY - 5 && adjustedSettingsMouseY <= sliderY + 7) {
-                                    draggingRangeSetting = rangeSetting;
-                                    float relativeX = (float) (mouseX - (settingsX + 6));
-                                    float totalWidth = PANEL_WIDTH - 12;
-                                    float percentage = Math.max(0, Math.min(1, relativeX / totalWidth));
+                                        draggingRangeMin = Math.abs(percentage - minProgress) < Math.abs(percentage - maxProgress);
 
-                                    float minProgress = (rangeSetting.getValueMin().floatValue() - rangeSetting.getMin().floatValue()) /
-                                            (rangeSetting.getMax().floatValue() - rangeSetting.getMin().floatValue());
-                                    float maxProgress = (rangeSetting.getValueMax().floatValue() - rangeSetting.getMin().floatValue()) /
-                                            (rangeSetting.getMax().floatValue() - rangeSetting.getMin().floatValue());
-
-                                    draggingRangeMin = Math.abs(percentage - minProgress) < Math.abs(percentage - maxProgress);
-
-                                    float range = rangeSetting.getMax().floatValue() - rangeSetting.getMin().floatValue();
-                                    Number newValue = switch (rangeSetting.getMin()) {
-                                        case Double v -> rangeSetting.getMin().doubleValue() + (range * percentage);
-                                        case Float v -> rangeSetting.getMin().floatValue() + (range * percentage);
-                                        case Integer i -> (int) (rangeSetting.getMin().intValue() + (range * percentage));
-                                        case null, default -> rangeSetting.getMin().floatValue() + (range * percentage);
-                                    };
+                                        float range = rangeSetting.getMax().floatValue() - rangeSetting.getMin().floatValue();
+                                        Number newValue = switch (rangeSetting.getMin()) {
+                                            case Double v -> rangeSetting.getMin().doubleValue() + (range * percentage);
+                                            case Float v -> rangeSetting.getMin().floatValue() + (range * percentage);
+                                            case Integer i -> (int) (rangeSetting.getMin().intValue() + (range * percentage));
+                                            case null, default -> rangeSetting.getMin().floatValue() + (range * percentage);
+                                        };
 
                                         Number[] currentValues = rangeSetting.getValue();
                                         if (draggingRangeMin) {
@@ -1295,16 +1263,16 @@ public class RemnantScreen extends Screen implements QuickImports {
                         }
 
                         if ((setting instanceof ModeSetting modeSetting && panel.getOpenModeSetting() == modeSetting) ||
-                            (setting instanceof MultiSetting multiSetting && panel.getOpenMultiSetting() == multiSetting)) {
+                                (setting instanceof MultiSetting multiSetting && panel.getOpenMultiSetting() == multiSetting)) {
                             float optionY = moduleY + PANEL_HEIGHT;
                             List<String> modes = setting instanceof ModeSetting ?
-                                ((ModeSetting) setting).getModes() :
-                                ((MultiSetting) setting).getModes();
+                                    ((ModeSetting) setting).getModes() :
+                                    ((MultiSetting) setting).getModes();
 
                             for (String mode : modes) {
                                 if (mouseX >= settingsX + 6 && mouseX <= settingsX + PANEL_WIDTH - 6 &&
-                                    adjustedSettingsMouseY >= optionY && adjustedSettingsMouseY <= optionY + PANEL_HEIGHT - 2 &&
-                                    mouseY >= pos.getY() + PANEL_HEIGHT + 2 && mouseY <= pos.getY() + panel.getCurrentHeight()) {
+                                        adjustedSettingsMouseY >= optionY && adjustedSettingsMouseY <= optionY + PANEL_HEIGHT - 2 &&
+                                        mouseY >= pos.getY() + PANEL_HEIGHT + 2 && mouseY <= pos.getY() + panel.getCurrentHeight()) {
                                     if (setting instanceof ModeSetting modeSetting2) {
                                         modeSetting2.setValue(mode);
                                     } else if (setting instanceof MultiSetting multiSetting2) {
@@ -1330,7 +1298,7 @@ public class RemnantScreen extends Screen implements QuickImports {
                 Vector2f pos = panel.getPosition();
 
                 if (mouseX >= pos.getX() && mouseX <= pos.getX() + PANEL_WIDTH &&
-                    mouseY >= pos.getY() && mouseY <= pos.getY() + PANEL_HEIGHT) {
+                        mouseY >= pos.getY() && mouseY <= pos.getY() + PANEL_HEIGHT) {
                     panel.setOpen(!panel.isOpen());
                     if (!panel.isOpen()) {
                         panel.setShowingSettings(false);
@@ -1352,7 +1320,7 @@ public class RemnantScreen extends Screen implements QuickImports {
                         float settingsX = pos.getX() + settingsOffset;
 
                         if (mouseX >= settingsX && mouseX <= settingsX + PANEL_WIDTH &&
-                            mouseY >= moduleY && mouseY <= moduleY + PANEL_HEIGHT) {
+                                mouseY >= moduleY && mouseY <= moduleY + PANEL_HEIGHT) {
                             panel.setShowingSettings(false);
                             panel.lastSettingsAnimationTime = System.currentTimeMillis();
                             selectedModule = null;
@@ -1362,9 +1330,9 @@ public class RemnantScreen extends Screen implements QuickImports {
                     } else {
                         for (Module module : panel.getModules()) {
                             if (mouseX >= pos.getX() + moduleXOffset && mouseX <= pos.getX() + PANEL_WIDTH + moduleXOffset &&
-                                adjustedMouseY >= moduleY && adjustedMouseY <= moduleY + PANEL_HEIGHT &&
-                                mouseY >= pos.getY() + PANEL_HEIGHT + 2 && mouseY <= pos.getY() + panel.getCurrentHeight() &&
-                                !module.getSettingRepository().getSettings().isEmpty()) {
+                                    adjustedMouseY >= moduleY && adjustedMouseY <= moduleY + PANEL_HEIGHT &&
+                                    mouseY >= pos.getY() + PANEL_HEIGHT + 2 && mouseY <= pos.getY() + panel.getCurrentHeight() &&
+                                    !module.getSettingRepository().getSettings().isEmpty()) {
                                 for (Panel otherPanel : panels.values()) {
                                     if (otherPanel != panel) {
                                         otherPanel.setShowingSettings(false);
@@ -1382,10 +1350,10 @@ public class RemnantScreen extends Screen implements QuickImports {
                 }
             }
         }
-        
+
         return super.mouseClicked(mouseX, mouseY, button);
     }
-    
+
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (button == 0) {
@@ -1419,34 +1387,34 @@ public class RemnantScreen extends Screen implements QuickImports {
     public void onDisplayed() {
         for (Panel panel : panels.values()) {
             panel.setCurrentHeight(0);
-            panel.updateHeight(panel.isOpen() ? 
-                PANEL_HEIGHT + (PANEL_HEIGHT + 2) * panel.getModules().size() + 2 : 
-                PANEL_HEIGHT + 2);
+            panel.updateHeight(panel.isOpen() ?
+                    PANEL_HEIGHT + (PANEL_HEIGHT + 2) * panel.getModules().size() + 2 :
+                    PANEL_HEIGHT + 2);
             panel.lastHeightAnimationTime = System.currentTimeMillis();
             panel.animationProgress = 0f;
-            
+
             for (BooleanSetting setting : panel.booleanAnimations.keySet()) {
                 panel.booleanAnimations.put(setting, setting.getValue() ? 1f : 0f);
                 panel.booleanAnimationTimes.put(setting, System.currentTimeMillis());
             }
-            
+
             for (ModeSetting setting : panel.modeAnimations.keySet()) {
                 panel.modeAnimations.put(setting, panel.getOpenModeSetting() == setting ? 1f : 0f);
                 panel.modeAnimationTimes.put(setting, System.currentTimeMillis());
             }
-            
+
             for (MultiSetting setting : panel.multiAnimations.keySet()) {
                 panel.multiAnimations.put(setting, panel.getOpenMultiSetting() == setting ? 1f : 0f);
                 panel.multiAnimationTimes.put(setting, System.currentTimeMillis());
             }
-            
+
             for (NumberSetting<?> setting : panel.numberAnimations.keySet()) {
                 double progress = (setting.getValue().doubleValue() - setting.getMinValue().doubleValue()) /
                         (setting.getMaxValue().doubleValue() - setting.getMinValue().doubleValue());
                 panel.numberAnimations.put(setting, (float) progress);
                 panel.numberAnimationTimes.put(setting, System.currentTimeMillis());
             }
-            
+
             for (RangeSetting<?> setting : panel.rangeAnimations.keySet()) {
                 double minProgress = (setting.getValueMin().doubleValue() - setting.getMin().doubleValue()) /
                         (setting.getMax().doubleValue() - setting.getMin().doubleValue());
@@ -1480,7 +1448,7 @@ public class RemnantScreen extends Screen implements QuickImports {
                 float relativeX = (float) (mouseX - (settingsX + 6));
                 float totalWidth = PANEL_WIDTH - 12;
                 float percentage = Math.max(0, Math.min(1, relativeX / totalWidth));
-                
+
                 float range = draggingNumberSetting.getMaxValue().floatValue() - draggingNumberSetting.getMinValue().floatValue();
                 float newValue = draggingNumberSetting.getMinValue().floatValue() + (range * percentage);
                 if (draggingNumberSetting.getValue() instanceof Integer) {
@@ -1505,7 +1473,7 @@ public class RemnantScreen extends Screen implements QuickImports {
                 float relativeX = (float) (mouseX - (settingsX + 6));
                 float totalWidth = PANEL_WIDTH - 12;
                 float percentage = Math.max(0, Math.min(1, relativeX / totalWidth));
-                
+
                 float range = draggingRangeSetting.getMax().floatValue() - draggingRangeSetting.getMin().floatValue();
                 Number newValue;
                 if (draggingRangeSetting.getMin() instanceof Double) {
@@ -1534,11 +1502,11 @@ public class RemnantScreen extends Screen implements QuickImports {
             Vector2f pos = selectedPanel.getPosition();
             float settingsOffset = (1f - selectedPanel.getSettingsAnimationProgress()) * PANEL_WIDTH;
             float settingsX = pos.getX() + settingsOffset;
-            
+
             float moduleY = pos.getY() + PANEL_HEIGHT + 2;
-            
+
             moduleY += PANEL_HEIGHT + 4;
-            
+
             for (Setting<?> setting : selectedModule.getSettingRepository().getSettings().values()) {
                 if (!(setting instanceof SettingCategory)) {
                     if (setting == draggedColorSetting) {
@@ -1560,8 +1528,8 @@ public class RemnantScreen extends Screen implements QuickImports {
             float toggleY = moduleY + (PANEL_HEIGHT - TOGGLE_HEIGHT) / 2;
 
             if (mouseX >= settingsX + PANEL_WIDTH - TOGGLE_WIDTH - SETTING_PADDING - 2 &&
-                mouseX <= settingsX + PANEL_WIDTH - SETTING_PADDING - 2 &&
-                mouseY >= toggleY && mouseY <= toggleY + TOGGLE_HEIGHT) {
+                    mouseX <= settingsX + PANEL_WIDTH - SETTING_PADDING - 2 &&
+                    mouseY >= toggleY && mouseY <= toggleY + TOGGLE_HEIGHT) {
                 boolean newExpandedState = !panel.colorSettingExpanded.getOrDefault(colorSetting, false);
                 panel.colorSettingExpanded.put(colorSetting, newExpandedState);
                 panel.colorAnimationTimes.put(colorSetting, System.currentTimeMillis());
@@ -1664,19 +1632,19 @@ public class RemnantScreen extends Screen implements QuickImports {
         for (Panel panel : panels.values()) {
             Vector2f pos = panel.getPosition();
             if (panel.isOpen() && mouseX >= pos.getX() && mouseX <= pos.getX() + PANEL_WIDTH &&
-                mouseY >= pos.getY() && mouseY <= pos.getY() + panel.getCurrentHeight()) {
-                
+                    mouseY >= pos.getY() && mouseY <= pos.getY() + panel.getCurrentHeight()) {
+
                 if (panel.isShowingSettings() && selectedModule != null && selectedPanel == panel) {
                     float settingsOffset = (1f - panel.getSettingsAnimationProgress()) * PANEL_WIDTH;
                     float settingsX = pos.getX() + settingsOffset;
-                    
+
                     if (mouseX >= settingsX && mouseX <= settingsX + PANEL_WIDTH) {
                         float newSettingScrollOffset = panel.settingScrollOffset - (float)(verticalAmount * 10);
                         panel.settingScrollOffset = Math.max(0, Math.min(panel.maxSettingScrollOffset, newSettingScrollOffset));
                         return true;
                     }
                 }
-                
+
                 if (panel.maxModuleScrollOffset > 0) {
                     float newModuleScrollOffset = panel.getModuleScrollOffset() - (float)(verticalAmount * 10);
                     panel.setModuleScrollOffset(Math.max(0, Math.min(panel.getMaxModuleScrollOffset(), newModuleScrollOffset)));
