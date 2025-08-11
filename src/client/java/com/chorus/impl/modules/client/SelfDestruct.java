@@ -30,16 +30,6 @@ public class SelfDestruct extends BaseModule implements QuickImports {
 
     @Override
     protected void onModuleEnabled() {
-        Chorus.getInstance().getConfigManager().saveCurrentProfile();
-        Chorus.getInstance().getConfigManager().shutdown();
-//        try {
-//            Files.walk(Chorus.getInstance().getConfigManager().getConfigRoot())
-//                    .sorted(Comparator.reverseOrder())
-//                    .map(Path::toFile)
-//                    .forEach(File::delete);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         Chorus.getInstance().getModuleManager().getModules().forEach(module -> {
             if (module != this) {
                 module.onDisable();

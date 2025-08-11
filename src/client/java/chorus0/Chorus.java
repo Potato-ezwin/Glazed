@@ -17,7 +17,7 @@ import com.chorus.api.system.render.font.Fonts;
 import com.chorus.api.system.rotation.RotationComponent;
 import com.chorus.core.client.ClientInfo;
 import com.chorus.core.client.ConcreteClientInfoProvider;
-import com.chorus.core.client.config.ConfigManager;
+
 import com.chorus.core.listener.ListenerRepository;
 import com.chorus.impl.modules.client.*;
 import com.chorus.impl.modules.combat.*;
@@ -58,8 +58,7 @@ public final class Chorus implements ModInitializer {
     private TeamRepository teamRepository;
     @Getter
     private CommandManager commandManager;
-    @Getter
-    private ConfigManager configManager;
+
     @Getter
     private ListenerRepository listenerRepository;
     @Getter
@@ -81,7 +80,7 @@ public final class Chorus implements ModInitializer {
         commandManager = new CommandManager();
         moduleManager = new ModuleManager();
         settingManager = new SettingManager();
-        configManager = new ConfigManager(clientInfo);
+
         friendRepository = new FriendRepository();
         npcRepository = new BotRepository();
         teamRepository = new TeamRepository();

@@ -11,7 +11,7 @@ public interface ClientInfoProvider {
 
     Path clientDir();
 
-    Path configsDir();
+
 
     Path filesDir();
 

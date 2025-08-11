@@ -29,7 +29,6 @@ public class CommandManager {
 
     private static final List<Class<? extends BaseCommand>> COMMAND_REGISTRATIONS = Arrays.asList(
             PrefixCommand.class,
-            ConfigCommand.class,
             BindCommand.class,
             FriendCommand.class,
             ToggleCommand.class

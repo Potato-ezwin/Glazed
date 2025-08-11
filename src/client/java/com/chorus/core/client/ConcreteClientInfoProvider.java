@@ -13,10 +13,7 @@ public class ConcreteClientInfoProvider implements ClientInfoProvider {
         return Path.of(System.getProperty("user.home"), ".chorus");
     }
 
-    @Override
-    public Path configsDir() {
-        return Path.of(System.getProperty("user.home"), ".chorus", "configs");
-    }
+
 
     @Override
     public Path filesDir() {
@@ -29,7 +26,7 @@ public class ConcreteClientInfoProvider implements ClientInfoProvider {
     }
 
     public ClientInfo provideClientInfo() {
-        return new ClientInfo(name(), version(), branch(), clientDir(), filesDir(), configsDir());
+        return new ClientInfo(name(), version(), branch(), clientDir(), filesDir());
     }
 
     @Override
